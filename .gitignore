@@ -39,3 +39,23 @@
 
 # debug information files
 *.dwo
+*/CompGr_first/CompGr_first/x64/Debug/CompGr_first.tlog/
+*/CompGr_first/CompGr_first/x64/Debug/Renderin.104bf5f3.tlog/
+
+x64/
+Debug/
+*.obj
+*.pdb
+*.ilk
+*.tlog
+
+.vs/
+ipch/
+*.ipch
+Debug/
+Release/
+x64/
+*.obj
+*.pdb
+*.ilk
+*.tlog
