@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 #include <chrono>
+#include "Camera.h"
 
 class DisplayWin32;
 class InputDevice;
@@ -35,6 +36,8 @@ public:
 	void AddComponent(std::unique_ptr<GameComponent> Component);
 
 	LRESULT MessageHandler(HWND WindowHandle, UINT Message, WPARAM WParam, LPARAM LParam);
+
+	Camera MainCamera;//добавлю камеру сюда
 
 protected:
 	virtual void PrepareResources();

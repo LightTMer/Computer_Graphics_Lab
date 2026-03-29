@@ -31,6 +31,9 @@ void Game::Initialize()
 {
 	HINSTANCE InstanceHandle = GetModuleHandle(nullptr);
 
+	std::srand((unsigned int)std::time(nullptr));//NOVOE
+
+
 	Display = std::make_unique<DisplayWin32>(
 		Name,
 		InstanceHandle,
@@ -154,6 +157,9 @@ void Game::PrepareFrame()
 
 void Game::Update(float DeltaTime)
 {
+	if (Input->IsKeyDown('C')) MainCamera.SwitchMode();       // FPS <-> Orbit
+	if (Input->IsKeyDown('P')) MainCamera.SwitchProjection();
+	MainCamera.Update(DeltaTime);//обновл€ю и камеру
 	for (auto& Component : Components)
 	{
 		Component->Update(DeltaTime);
@@ -162,7 +168,8 @@ void Game::Update(float DeltaTime)
 
 void Game::Draw()
 {
-	float ClearColor[] = { TotalTime, 0.1f, 0.1f, 1.0f };
+	float t = fmod(TotalTime, 5.0f) / 5.0f; // 0..1 циклично каждые 2 секунды
+	float ClearColor[] = { 0.5f * t, 0.0f, 0.5f * (1.0f - t), 1.0f };
 	Context->ClearRenderTargetView(RenderView, ClearColor);
 
 	for (auto& Component : Components)
@@ -300,10 +307,31 @@ LRESULT Game::MessageHandler(HWND WindowHandle, UINT Message, WPARAM WParam, LPA
 		{
 			int PositionX = LOWORD(LParam);
 			int PositionY = HIWORD(LParam);
+
+			static int lastX = PositionX;
+			static int lastY = PositionY;
+
+			int dx = PositionX - lastX;
+			int dy = PositionY - lastY;
+
+			lastX = PositionX;
+			lastY = PositionY;
+
 			Input->OnMouseMove(PositionX, PositionY);
+			MainCamera.ProcessMouseDelta((float)dx, (float)dy);
+
 		}
 		return 0;
 	}
+
+	case WM_MOUSEWHEEL://колесо
+	{
+		// прокрутка колЄсика мыши
+		int delta = GET_WHEEL_DELTA_WPARAM(WParam);
+		MainCamera.ProcessScroll((float)delta * 0.1f); // масштабируем скорость прокрутки
+		return 0;
+	}
+
 	default:
 	{
 		return DefWindowProc(WindowHandle, Message, WParam, LParam);
